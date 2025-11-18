@@ -1,3 +1,4 @@
+
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { GoogleGenAI, Blob, LiveServerMessage, Modality } from '@google/genai';
 import { correctText } from '../services/geminiService';
@@ -25,9 +26,10 @@ function createBlob(data: Float32Array): Blob {
 }
 
 const getApiKey = () => {
-    const apiKey = process.env.NEXT_PUBLIC_GOOGLE_API_KEY;
+    // Fix: Cast import.meta to any to avoid TS error about missing env property
+    const apiKey = (import.meta as any).env.VITE_GOOGLE_API_KEY;
     if (!apiKey) {
-        throw new Error("NEXT_PUBLIC_GOOGLE_API_KEY environment variable is not set.");
+        throw new Error("VITE_GOOGLE_API_KEY environment variable is not set.");
     }
     return apiKey;
 };

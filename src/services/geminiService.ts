@@ -1,3 +1,4 @@
+
 import { GoogleGenAI, Modality, Type } from "@google/genai";
 import type { EsportPromptOptions, UniverseId, Format, UniversePreset, GameType, GraphicStyle, Ambiance, VisualElements, TextStyle, PromptChangeSummary, CropArea, CharacterShot, InspirationImage } from "../types";
 import { GAME_TYPES, GRAPHIC_STYLES, AMBIANCES, VISUAL_ELEMENTS, CHARACTER_SHOTS } from "../constants/options";
@@ -5,9 +6,10 @@ import { GAME_TYPES, GRAPHIC_STYLES, AMBIANCES, VISUAL_ELEMENTS, CHARACTER_SHOTS
 // Helper to get a new AI client instance with the current API key.
 // This ensures that if the key changes, new requests use the updated key.
 const getAiClient = () => {
-    const apiKey = process.env.NEXT_PUBLIC_GOOGLE_API_KEY;
+    // Fix: Cast import.meta to any to avoid TS error about missing env property
+    const apiKey = (import.meta as any).env.VITE_GOOGLE_API_KEY;
     if (!apiKey) {
-        throw new Error("API key is missing. Please set NEXT_PUBLIC_GOOGLE_API_KEY in your environment variables.");
+        throw new Error("API key is missing. Please set VITE_GOOGLE_API_KEY in your environment variables.");
     }
     return new GoogleGenAI({ apiKey });
 };
