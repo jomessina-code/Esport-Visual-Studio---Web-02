@@ -800,6 +800,17 @@ const App: React.FC = () => {
 
   const handleUpdatePreset = (presetId: UniverseId, updatedData: Omit<UniversePreset, 'id' | 'isCustom' | 'dominant'>) => {
       setCustomPresets(prev => prev.map(p => p.id === presetId ? { ...p, ...updatedData } : p));
+      
+      if (options.universes.includes(presetId)) {
+          setOptions(prev => ({
+              ...prev,
+              gameType: updatedData.gameType,
+              graphicStyle: updatedData.style,
+              ambiance: updatedData.ambiance,
+              visualElements: updatedData.elements
+          }));
+      }
+
       showToast(`Univers "${updatedData.label}" mis à jour !`);
   };
 

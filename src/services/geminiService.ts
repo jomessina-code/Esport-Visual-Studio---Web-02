@@ -15,7 +15,7 @@ const getAiClient = () => {
 };
 
 // Generic retry wrapper for API calls
-async function withRetry<T>(fn: () => Promise<T>, retries = 3, delay = 1000, functionName = 'Operation'): Promise<T> {
+async function withRetry<T>(fn: () => Promise<T>, retries = 5, delay = 2000, functionName = 'Operation'): Promise<T> {
     try {
         return await fn();
     } catch (e: any) {
@@ -479,7 +479,7 @@ export const correctText = async (text: string): Promise<string> => {
         } catch (e) {
             throw e;
         }
-    }, 3, 1000, 'correctText').catch(e => handleApiError(e, 'correctText'));
+    }, 5, 2000, 'correctText').catch(e => handleApiError(e, 'correctText'));
 };
 
 export const generateEsportImage = async (
@@ -533,7 +533,7 @@ export const generateEsportImage = async (
         } catch (e) {
             throw e; // Let the retry wrapper catch it or handleApiError
         }
-    }, 3, 1000, 'generateEsportImage').catch(e => handleApiError(e, 'generateEsportImage'));
+    }, 5, 2000, 'generateEsportImage').catch(e => handleApiError(e, 'generateEsportImage'));
 };
 
 export const editImage = async (
@@ -590,7 +590,7 @@ export const editImage = async (
         } catch (e) {
             throw e;
         }
-    }, 1, 30000, 'editImage').catch(e => handleApiError(e, 'editImage')); // Retry 1x with 30s delay
+    }, 3, 5000, 'editImage').catch(e => handleApiError(e, 'editImage')); // Increased retries and delay
 };
 
 export const applyOutpainting = async (
@@ -639,7 +639,7 @@ Image finale = 100% pleine, aucune bordure.
         } catch (e) {
             throw e;
         }
-    }, 1, 30000, 'applyOutpainting').catch(e => handleApiError(e, 'applyOutpainting'));
+    }, 3, 5000, 'applyOutpainting').catch(e => handleApiError(e, 'applyOutpainting'));
 };
 
 
@@ -681,7 +681,7 @@ export const determineTextStyle = async (imageBase64: string): Promise<TextStyle
         } catch (e) {
             throw e;
         }
-    }, 3, 1000, 'determineTextStyle').catch(e => handleApiError(e, 'determineTextStyle'));
+    }, 5, 2000, 'determineTextStyle').catch(e => handleApiError(e, 'determineTextStyle'));
 };
 
 export const addTextToImage = async (
@@ -733,7 +733,7 @@ export const addTextToImage = async (
         } catch (e) {
             throw e;
         }
-    }, 3, 1000, 'addTextToImage').catch(e => handleApiError(e, 'addTextToImage'));
+    }, 5, 2000, 'addTextToImage').catch(e => handleApiError(e, 'addTextToImage'));
 };
 
 export const adaptEsportImage = async (
@@ -866,7 +866,7 @@ Retourne uniquement l'image adaptée.
         } catch (e) {
             throw e;
         }
-    }, 3, 1000, 'adaptEsportImage').catch(e => handleApiError(e, 'adaptEsportImage'));
+    }, 5, 2000, 'adaptEsportImage').catch(e => handleApiError(e, 'adaptEsportImage'));
 };
 
 export const refinePrompt = async (currentPrompt: string, userFeedback: string): Promise<string> => {
@@ -884,7 +884,7 @@ export const refinePrompt = async (currentPrompt: string, userFeedback: string):
         } catch (e) {
             throw e;
         }
-    }, 3, 1000, 'refinePrompt').catch(e => handleApiError(e, 'refinePrompt'));
+    }, 5, 2000, 'refinePrompt').catch(e => handleApiError(e, 'refinePrompt'));
 };
 
 export const suggestUniversePreset = async (theme: string, image?: InspirationImage | null): Promise<Omit<UniversePreset, 'id' | 'isCustom' | 'dominant'>> => {
@@ -960,7 +960,7 @@ Ne retourne que l'objet JSON, sans formatage de code markdown.`;
         } catch (e) {
             throw e;
         }
-    }, 3, 1000, 'suggestUniversePreset').catch(e => handleApiError(e, 'suggestUniversePreset'));
+    }, 5, 2000, 'suggestUniversePreset').catch(e => handleApiError(e, 'suggestUniversePreset'));
 };
 
 export const refinePromptForModification = async (currentPrompt: string, modificationRequest: string): Promise<string> => {
@@ -978,7 +978,7 @@ export const refinePromptForModification = async (currentPrompt: string, modific
         } catch (e) {
             throw e;
         }
-    }, 3, 1000, 'refinePromptForModification').catch(e => handleApiError(e, 'refinePromptForModification'));
+    }, 5, 2000, 'refinePromptForModification').catch(e => handleApiError(e, 'refinePromptForModification'));
 };
 
 export const summarizePromptChanges = async (originalPrompt: string, newPrompt: string, userRequest: string): Promise<PromptChangeSummary> => {
@@ -1006,7 +1006,7 @@ export const summarizePromptChanges = async (originalPrompt: string, newPrompt: 
         } catch (e) {
             throw e;
         }
-    }, 3, 1000, 'summarizePromptChanges').catch(e => handleApiError(e, 'summarizePromptChanges'));
+    }, 5, 2000, 'summarizePromptChanges').catch(e => handleApiError(e, 'summarizePromptChanges'));
 };
 
 export const analyzeBlockedPrompt = async (blockedPrompt: string): Promise<string> => {
@@ -1044,5 +1044,5 @@ ${blockedPrompt}
             console.error("Error in analyzeBlockedPrompt:", e);
             throw new Error("L'analyse automatique du prompt a échoué.");
         }
-    }, 3, 1000, 'analyzeBlockedPrompt'); // Pas de catch ici, on laisse l'erreur remonter pour être gérée par le composant appelant si le retry échoue.
+    }, 5, 2000, 'analyzeBlockedPrompt'); // Pas de catch ici, on laisse l'erreur remonter pour être gérée par le composant appelant si le retry échoue.
 };
