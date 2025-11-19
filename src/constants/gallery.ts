@@ -117,6 +117,16 @@ const uniqueImages = [
         id: 'gallery-23',
         url: 'https://i.postimg.cc/rmHCRscK/urban-kart-frenzy-carre-1024x1024px-2025-11-12-1748-png-compressed.jpg',
         alt: 'Urban Kart Frenzy',
+    },
+    {
+        id: 'gallery-25',
+        url: 'https://i.postimg.cc/SQWCJM8z/e-clat-oriental-carre-1024x1024px-2025-11-18-2141-png-compressed.jpg',
+        alt: 'Éclat Oriental',
+    },
+    {
+        id: 'gallery-26',
+        url: 'https://i.postimg.cc/J7bZGkJk/univers-personnalise-carre-1024x1024px-2025-11-18-2119-png-compressed.jpg',
+        alt: 'Univers Personnalisé 2',
     }
 ];
 
