@@ -31,6 +31,7 @@ export interface UniversePreset {
   influenceWeight: number;
   dominant: boolean;
   isCustom?: boolean;
+  userId?: string;
 }
 
 export interface InspirationImage {

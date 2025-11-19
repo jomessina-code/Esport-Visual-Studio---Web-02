@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import ControlsPanel from './components/ControlsPanel/ControlsPanel';
 import WelcomePanel from './components/WelcomePanel';
 import LoadingPanel from './components/LoadingPanel';
@@ -255,7 +255,20 @@ const App: React.FC = () => {
     }
   }, [customPresets, savedSubjects]);
 
-  const allPresets = [...UNIVERSE_PRESETS, ...customPresets];
+  const allPresets = useMemo(() => {
+      const systemPresets = UNIVERSE_PRESETS;
+      const userPresets = customPresets.filter(p => {
+          // If the preset has a userId, it must match the current user
+          if (p.userId) {
+              return currentUser && p.userId === currentUser.email;
+          }
+          // If legacy preset without ID, show it? Or strict isolation?
+          // Assuming strict ownership based on request: new ones have ID, old ones effectively hidden/global.
+          // We will assume only logged-in users see their presets.
+          return currentUser && p.userId === currentUser.email;
+      });
+      return [...systemPresets, ...userPresets];
+  }, [customPresets, currentUser]);
 
 
   
@@ -787,6 +800,7 @@ const App: React.FC = () => {
         id: `custom_${Date.now()}`,
         isCustom: true,
         dominant: false,
+        userId: currentUser.email, // Add userId here
     };
     const newHistoryItem: UniverseHistoryItem = {
         id: newPreset.id,
