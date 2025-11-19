@@ -1,3 +1,4 @@
+
 import * as React from "react";
 
 export type GameType = "MOBA" | "FPS" | "Combat" | "Battle Royale" | "Sport" | "Multi-genre";
@@ -128,6 +129,7 @@ export interface PartnerZoneConfig {
 
 export interface GenerationHistoryItem {
   id: string;
+  userId: string; // Added to segregate history per user
   timestamp: number;
   imageUrl: string;
   masterImageNoText?: string;

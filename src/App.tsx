@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import ControlsPanel from './components/ControlsPanel/ControlsPanel';
 import WelcomePanel from './components/WelcomePanel';
@@ -174,11 +175,20 @@ const App: React.FC = () => {
     }
   };
 
+  // Load user-specific history
+  const loadHistoryForUser = async (userId: string) => {
+      const items = await getHistory(userId);
+      setHistory(items);
+  };
+
   useEffect(() => {
     try {
         const loggedInUserStr = localStorage.getItem('EVS_CURRENT_USER');
         if (loggedInUserStr) {
-            setCurrentUser(JSON.parse(loggedInUserStr));
+            const user = JSON.parse(loggedInUserStr);
+            setCurrentUser(user);
+            // Load history for this user
+            loadHistoryForUser(user.email);
         }
     } catch (e) {
         console.error("Failed to parse current user from localStorage", e);
@@ -248,15 +258,6 @@ const App: React.FC = () => {
   const allPresets = [...UNIVERSE_PRESETS, ...customPresets];
 
 
-  // Load history from IndexedDB on mount
-  useEffect(() => {
-    const loadHistory = async () => {
-        const items = await getHistory();
-        setHistory(items);
-    };
-    loadHistory();
-  }, []);
-
   
   useEffect(() => {
     if (isPromptCustomized) return;
@@ -275,10 +276,16 @@ const App: React.FC = () => {
       setInitialAuthMode(mode);
       setIsAuthModalOpen(true);
   };
+  
   const handleLogout = () => {
       saveCurrentUser(null);
+      setHistory([]); // Clear history
+      setIsPanelOpen(false); // Close panel
+      setView('welcome'); // Go back to home
+      setIsImageEditorOpen(false); // Close editor if open
       showToast("Tu as été déconnecté.");
   };
+
   const handleSignup = async (email: string, pass: string, pseudo: string) => {
       return new Promise<void>((resolve, reject) => {
           setTimeout(() => {
@@ -303,6 +310,7 @@ const App: React.FC = () => {
                     purchasesHistory: [],
                   };
                   saveCurrentUser(newUser);
+                  loadHistoryForUser(email); // Load empty history for new user
 
                   setIsAuthModalOpen(false);
                   showToast(`Bienvenue, ${pseudo} ! 20 crédits offerts.`);
@@ -343,6 +351,7 @@ const App: React.FC = () => {
                   }
 
                   saveCurrentUser(user);
+                  loadHistoryForUser(email); // Load specific history
 
                   setIsAuthModalOpen(false);
                   showToast(`Content de te revoir, ${user.pseudo} !`);
@@ -364,6 +373,7 @@ const App: React.FC = () => {
       purchasesHistory: [],
     };
     saveCurrentUser(devUser);
+    loadHistoryForUser(devUser.email);
     setIsAuthModalOpen(false);
     showToast('Connecté en mode développeur avec des crédits illimités.');
   };
@@ -448,8 +458,7 @@ const App: React.FC = () => {
     // Async save to DB
     try {
         await saveHistoryItem(item);
-        const updatedHistory = await getHistory();
-        setHistory(updatedHistory);
+        // No need to reload all history, we just appended locally
     } catch (e) {
         console.error("Failed to save to IndexedDB", e);
         showToast("Erreur lors de la sauvegarde dans l'historique.");
@@ -638,6 +647,7 @@ const App: React.FC = () => {
 
         await addToHistory({
           id: newVisualHistoryItem.historyId,
+          userId: currentUser.email, // Ensure history is tied to user
           timestamp: newVisualHistoryItem.date,
           imageUrl: finalImageBase64,
           masterImageNoText: finalImageBase64,
@@ -659,7 +669,7 @@ const App: React.FC = () => {
   };
 
   const handleOutpainting = () => {
-    if (!masterImageNoText) return;
+    if (!masterImageNoText || !currentUser) return;
 
     handleAttemptAction(CREDIT_COSTS.VARIATION, async () => {
       setIsOutpainting(true);
@@ -673,6 +683,7 @@ const App: React.FC = () => {
         const newHistoryId = Date.now().toString();
         const newHistoryItem: GenerationHistoryItem = {
           id: newHistoryId,
+          userId: currentUser.email,
           timestamp: Date.now(),
           imageUrl: outpaintedImageBase64,
           masterImageNoText: outpaintedImageBase64,
@@ -871,6 +882,8 @@ const App: React.FC = () => {
   
   // NEW: Function to handle when an image is validated in the editor
   const handleImageValidated = async (newImageBase64: string, newImageMimeType: string, editPrompt: string) => {
+      if (!currentUser) return;
+
       setMasterImageNoText(newImageBase64);
       setGeneratedImage(newImageBase64);
       
@@ -878,6 +891,7 @@ const App: React.FC = () => {
       const newHistoryId = Date.now().toString();
       const newHistoryItem: GenerationHistoryItem = {
           id: newHistoryId,
+          userId: currentUser.email,
           timestamp: Date.now(),
           imageUrl: newImageBase64,
           masterImageNoText: newImageBase64,

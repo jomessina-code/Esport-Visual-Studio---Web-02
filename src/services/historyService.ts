@@ -1,3 +1,4 @@
+
 import type { GenerationHistoryItem } from '../types';
 
 const DB_NAME = 'EVS_DB';
@@ -38,7 +39,7 @@ export const saveHistoryItem = async (item: GenerationHistoryItem): Promise<void
   }
 };
 
-export const getHistory = async (): Promise<GenerationHistoryItem[]> => {
+export const getHistory = async (userId?: string): Promise<GenerationHistoryItem[]> => {
   try {
       const db = await openDB();
       return new Promise((resolve, reject) => {
@@ -47,9 +48,15 @@ export const getHistory = async (): Promise<GenerationHistoryItem[]> => {
         const request = store.getAll();
         request.onsuccess = () => {
             const result = request.result as GenerationHistoryItem[];
+            
+            // Filter by userId if provided
+            const filtered = userId 
+                ? result.filter(item => item.userId === userId)
+                : []; // Return empty if no userId provided to avoid showing mixed history
+
             // Sort by timestamp descending
-            result.sort((a, b) => b.timestamp - a.timestamp);
-            resolve(result);
+            filtered.sort((a, b) => b.timestamp - a.timestamp);
+            resolve(filtered);
         };
         request.onerror = () => reject(request.error);
       });
