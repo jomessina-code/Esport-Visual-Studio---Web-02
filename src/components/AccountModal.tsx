@@ -9,6 +9,7 @@ import Cog6ToothIcon from './icons/Cog6ToothIcon';
 import ShieldCheckIcon from './icons/ShieldCheckIcon';
 import QuestionMarkCircleIcon from './icons/QuestionMarkCircleIcon';
 import UserIcon from './icons/UserIcon';
+import CalendarIcon from './icons/CalendarIcon';
 
 interface AccountModalProps {
   isOpen: boolean;
@@ -137,7 +138,7 @@ const AccountModal: React.FC<AccountModalProps> = ({ isOpen, onClose, currentUse
                         </Section>
                         
                         <Section title="Crédits & Historique" icon={<CreditCardIcon />}>
-                            <div className="bg-gray-700/50 p-4 rounded-lg flex items-center justify-between">
+                            <div className="bg-gray-700/50 p-4 rounded-lg flex items-center justify-between mb-2">
                                 <div>
                                     <p className="text-sm text-gray-400">Solde actuel</p>
                                     <p className="text-2xl font-bold text-white">{currentUser.credits} crédits</p>
@@ -146,7 +147,53 @@ const AccountModal: React.FC<AccountModalProps> = ({ isOpen, onClose, currentUse
                                     Acheter des crédits
                                 </button>
                             </div>
-                            {/* History could be displayed here */}
+                            
+                            <div className="mt-6">
+                                <h4 className="text-sm font-semibold text-gray-300 mb-3 flex items-center gap-2">
+                                    <CalendarIcon className="w-4 h-4 text-gray-500" />
+                                    Historique des achats
+                                </h4>
+                                
+                                {currentUser.purchasesHistory.length > 0 ? (
+                                    <div className="bg-gray-900/30 rounded-lg border border-gray-700 overflow-hidden max-h-60 overflow-y-auto custom-scrollbar">
+                                        {[...currentUser.purchasesHistory]
+                                            .sort((a, b) => b.date - a.date)
+                                            .map((purchase) => (
+                                            <div key={purchase.id} className="p-3 border-b border-gray-700 last:border-0 hover:bg-gray-800/50 transition-colors">
+                                                <div className="flex justify-between items-start mb-2">
+                                                    <div>
+                                                        <p className="font-bold text-white text-sm">{purchase.packName}</p>
+                                                        <p className="text-xs text-gray-500 capitalize">
+                                                            {new Date(purchase.date).toLocaleDateString('fr-FR', {
+                                                                year: 'numeric',
+                                                                month: 'long',
+                                                                day: 'numeric'
+                                                            })}
+                                                        </p>
+                                                    </div>
+                                                    <div className="text-right">
+                                                        <p className="text-purple-400 font-bold text-sm">+{purchase.creditsAdded} Crédits</p>
+                                                        <p className="text-xs text-gray-400">{purchase.amount}</p>
+                                                    </div>
+                                                </div>
+                                                <div className="flex justify-between items-center">
+                                                    <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-medium bg-green-900/20 text-green-400 border border-green-900/30">
+                                                        <span className="w-1.5 h-1.5 rounded-full bg-green-500"></span>
+                                                        Réussi
+                                                    </span>
+                                                    <button className="text-xs text-gray-500 hover:text-gray-300 transition-colors underline decoration-gray-600 hover:decoration-gray-400">
+                                                        Voir le reçu
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <div className="bg-gray-900/30 rounded-lg border border-gray-700 p-6 text-center">
+                                        <p className="text-gray-500 text-sm">Aucun achat de crédits pour le moment.</p>
+                                    </div>
+                                )}
+                            </div>
                         </Section>
                         
                         <Section title="Préférences" icon={<Cog6ToothIcon />}>
