@@ -127,6 +127,11 @@ const uniqueImages = [
         id: 'gallery-26',
         url: 'https://i.postimg.cc/J7bZGkJk/univers-personnalise-carre-1024x1024px-2025-11-18-2119-png-compressed.jpg',
         alt: 'Univers Personnalisé 2',
+    },
+    {
+        id: 'gallery-27',
+        url: 'https://i.postimg.cc/zf3jNdP8/bataille-navale-en-briques-carre-1024x1024px-2025-11-19-1817-png-compressed.jpg',
+        alt: 'Bataille Navale en Briques',
     }
 ];
 
