@@ -10,6 +10,7 @@ import ShieldCheckIcon from './icons/ShieldCheckIcon';
 import QuestionMarkCircleIcon from './icons/QuestionMarkCircleIcon';
 import UserIcon from './icons/UserIcon';
 import CalendarIcon from './icons/CalendarIcon';
+import ChevronDownIcon from './icons/ChevronDownIcon';
 
 interface AccountModalProps {
   isOpen: boolean;
@@ -62,6 +63,7 @@ const ConfirmationDialog: React.FC<{
 const AccountModal: React.FC<AccountModalProps> = ({ isOpen, onClose, currentUser, onUpdateUser, onLogout, onDeleteAccount, onPurchase, onOpenPricingModal }) => {
     const [pseudo, setPseudo] = useState(currentUser?.pseudo || '');
     const [isSaving, setIsSaving] = useState(false);
+    const [isHistoryOpen, setIsHistoryOpen] = useState(false);
 
     const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
     const [isFinalDeleteConfirmOpen, setIsFinalDeleteConfirmOpen] = useState(false);
@@ -75,6 +77,7 @@ const AccountModal: React.FC<AccountModalProps> = ({ isOpen, onClose, currentUse
             setIsDeleteConfirmOpen(false);
             setIsFinalDeleteConfirmOpen(false);
             setDeleteInput('');
+            setIsHistoryOpen(false);
         }
     }, [currentUser, isOpen]);
 
@@ -149,49 +152,61 @@ const AccountModal: React.FC<AccountModalProps> = ({ isOpen, onClose, currentUse
                             </div>
                             
                             <div className="mt-6">
-                                <h4 className="text-sm font-semibold text-gray-300 mb-3 flex items-center gap-2">
-                                    <CalendarIcon className="w-4 h-4 text-gray-500" />
-                                    Historique des achats
-                                </h4>
+                                <button 
+                                    onClick={() => setIsHistoryOpen(!isHistoryOpen)}
+                                    className="w-full flex items-center justify-between text-sm font-semibold text-gray-300 mb-3 hover:text-white transition-colors focus:outline-none"
+                                >
+                                    <div className="flex items-center gap-2">
+                                        <CalendarIcon className="w-4 h-4 text-gray-500" />
+                                        Historique des achats
+                                    </div>
+                                    <ChevronDownIcon className={`w-4 h-4 transition-transform duration-200 ${isHistoryOpen ? 'rotate-180' : ''}`} />
+                                </button>
                                 
-                                {currentUser.purchasesHistory.length > 0 ? (
-                                    <div className="bg-gray-900/30 rounded-lg border border-gray-700 overflow-hidden max-h-60 overflow-y-auto custom-scrollbar">
-                                        {[...currentUser.purchasesHistory]
-                                            .sort((a, b) => b.date - a.date)
-                                            .map((purchase) => (
-                                            <div key={purchase.id} className="p-3 border-b border-gray-700 last:border-0 hover:bg-gray-800/50 transition-colors">
-                                                <div className="flex justify-between items-start mb-2">
-                                                    <div>
-                                                        <p className="font-bold text-white text-sm">{purchase.packName}</p>
-                                                        <p className="text-xs text-gray-500 capitalize">
-                                                            {new Date(purchase.date).toLocaleDateString('fr-FR', {
-                                                                year: 'numeric',
-                                                                month: 'long',
-                                                                day: 'numeric'
-                                                            })}
-                                                        </p>
+                                {isHistoryOpen && (
+                                    <>
+                                        {currentUser.purchasesHistory.length > 0 ? (
+                                            <div className="bg-gray-900/30 rounded-lg border border-gray-700 overflow-hidden max-h-60 overflow-y-auto custom-scrollbar animate-fade-in-up" style={{ animationDuration: '200ms' }}>
+                                                {[...currentUser.purchasesHistory]
+                                                    .sort((a, b) => b.date - a.date)
+                                                    .map((purchase) => (
+                                                    <div key={purchase.id} className="p-3 border-b border-gray-700 last:border-0 hover:bg-gray-800/50 transition-colors">
+                                                        <div className="flex justify-between items-start mb-2">
+                                                            <div>
+                                                                <p className="font-bold text-white text-sm">{purchase.packName}</p>
+                                                                <p className="text-xs text-gray-500 capitalize">
+                                                                    {new Date(purchase.date).toLocaleString('fr-FR', {
+                                                                        year: 'numeric',
+                                                                        month: 'long',
+                                                                        day: 'numeric',
+                                                                        hour: '2-digit',
+                                                                        minute: '2-digit'
+                                                                    })}
+                                                                </p>
+                                                            </div>
+                                                            <div className="text-right">
+                                                                <p className="text-purple-400 font-bold text-sm">+{purchase.creditsAdded} Crédits</p>
+                                                                <p className="text-xs text-gray-400">{purchase.amount}</p>
+                                                            </div>
+                                                        </div>
+                                                        <div className="flex justify-between items-center">
+                                                            <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-medium bg-green-900/20 text-green-400 border border-green-900/30">
+                                                                <span className="w-1.5 h-1.5 rounded-full bg-green-500"></span>
+                                                                Réussi
+                                                            </span>
+                                                            <button className="text-xs text-gray-500 hover:text-gray-300 transition-colors underline decoration-gray-600 hover:decoration-gray-400">
+                                                                Voir le reçu
+                                                            </button>
+                                                        </div>
                                                     </div>
-                                                    <div className="text-right">
-                                                        <p className="text-purple-400 font-bold text-sm">+{purchase.creditsAdded} Crédits</p>
-                                                        <p className="text-xs text-gray-400">{purchase.amount}</p>
-                                                    </div>
-                                                </div>
-                                                <div className="flex justify-between items-center">
-                                                    <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-medium bg-green-900/20 text-green-400 border border-green-900/30">
-                                                        <span className="w-1.5 h-1.5 rounded-full bg-green-500"></span>
-                                                        Réussi
-                                                    </span>
-                                                    <button className="text-xs text-gray-500 hover:text-gray-300 transition-colors underline decoration-gray-600 hover:decoration-gray-400">
-                                                        Voir le reçu
-                                                    </button>
-                                                </div>
+                                                ))}
                                             </div>
-                                        ))}
-                                    </div>
-                                ) : (
-                                    <div className="bg-gray-900/30 rounded-lg border border-gray-700 p-6 text-center">
-                                        <p className="text-gray-500 text-sm">Aucun achat de crédits pour le moment.</p>
-                                    </div>
+                                        ) : (
+                                            <div className="bg-gray-900/30 rounded-lg border border-gray-700 p-6 text-center animate-fade-in-up" style={{ animationDuration: '200ms' }}>
+                                                <p className="text-gray-500 text-sm">Aucun achat de crédits pour le moment.</p>
+                                            </div>
+                                        )}
+                                    </>
                                 )}
                             </div>
                         </Section>
