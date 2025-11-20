@@ -652,7 +652,7 @@ const App: React.FC = () => {
         setMasterImageNoText(finalImageBase64);
         setGeneratedImage(finalImageBase64);
         setCurrentImageOptions(options);
-        setQualityCheckResults({ resolution: options.highResolution, ratio: true, margins: true, text: true });
+        setQualityCheckResults({ resolution: options.highResolution, ratio: true, margins: !hasMargins, text: true });
         setDerivedImages({} as Record<Format, DerivedImage>);
         setTextLayers([]);
         setPartnerZone(null);

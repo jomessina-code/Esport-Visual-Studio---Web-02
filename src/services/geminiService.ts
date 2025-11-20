@@ -424,8 +424,8 @@ export const generateEsportPrompt = (options: EsportPromptOptions, allPresets: U
     }
 
     const noMarginInstruction = isFrench 
-        ? "IMPORTANT : L’image doit remplir 100% du cadre. Aucune bordure, aucune marge blanche, aucune zone vide. Le décor doit occuper toute la surface de l’image. Prolonge l’arrière-plan de manière continue jusqu’aux bords."
-        : "IMPORTANT: The image must fill 100% of the frame. No borders, no white margins, no empty areas. The background must occupy the entire surface of the image. Extend the background continuously to the edges.";
+        ? "IMPORTANT : Aucun bord blanc, aucune marge. Le visuel doit remplir tout le cadre, fond jusqu’aux bords. Interdiction formelle de blanc autour de la scène. Étends le décor au maximum."
+        : "IMPORTANT: No white borders, no margins. The visual must fill the entire frame, background to edges. Formal prohibition of white around the scene. Extend the scenery to the maximum.";
 
     const finalPrompt = `
 # MANDAT CRÉATIF : VISUEL D'AFFICHE E-SPORT
@@ -601,11 +601,9 @@ export const applyOutpainting = async (
         try {
             const ai = getAiClient();
             const prompt = `
-# MANDAT : OUTPAINTING AUTOMATIQUE
-Supprime les marges blanches en étendant le décor.
-Ne modifie pas le personnage, la pose ou la scène.
-Recrée uniquement l’arrière-plan en continuité jusqu’aux bords.
-Image finale = 100% pleine, aucune bordure.
+Supprime toutes les marges blanches et étends le fond jusqu’aux bords.
+Préserve parfaitement les personnages et la scène principale.
+L'image finale doit être pleine et sans aucune bordure.
             `;
             
             const response = await ai.models.generateContent({

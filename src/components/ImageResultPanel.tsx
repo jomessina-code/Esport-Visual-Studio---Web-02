@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import DownloadIcon from './icons/DownloadIcon';
 import QualityCheckPanel from './QualityCheckPanel';
@@ -512,12 +513,12 @@ const ImageResultPanel: React.FC<ImageResultPanelProps> = ({
         <button onClick={onDecline} className="col-span-1 flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-4 rounded-lg transition">Formats</button>
         <button
             onClick={onOutpainting}
-            disabled={!hasMargins || isOutpainting}
+            disabled={isOutpainting}
             className="col-span-1 flex items-center justify-center gap-2 bg-gray-600 hover:bg-gray-700 disabled:bg-gray-500 disabled:cursor-not-allowed text-white font-semibold py-3 px-4 rounded-lg transition"
-            title={hasMargins === false ? "Aucune marge détectée sur l'image" : "Étendre le fond pour remplir les marges"}
+            title="Étendre le fond et supprimer les marges"
         >
             {isOutpainting ? <SpinnerIcon className="w-5 h-5" /> : <OutpaintingIcon className="w-5 h-5" />}
-            Outpainting
+            Étendre / Réparer le fond
         </button>
         <button onClick={onOpenImageEditor} className="col-span-1 flex items-center justify-center gap-2 bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 px-4 rounded-lg transition">Modifier</button> {/* MODIFIED BUTTON */}
       </footer>

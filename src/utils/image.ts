@@ -1,3 +1,4 @@
+
 import type { ManualTextLayer } from '../types';
 
 // Internal utility for high-quality stepped downscaling
@@ -381,53 +382,34 @@ export const detectMargins = (imageBase64: string): Promise<boolean> => {
             if (!ctx) { resolve(false); return; }
             
             ctx.drawImage(img, 0, 0);
-            const imageData = ctx.getImageData(0, 0, width, height).data;
+            const data = ctx.getImageData(0, 0, width, height).data;
 
-            const getPixel = (x: number, y: number) => {
-                const i = (y * width + x) * 4;
-                return [imageData[i], imageData[i+1], imageData[i+2]];
-            };
+            const isWhite = (r: number, g: number, b: number) => r > 240 && g > 240 && b > 240;
+            const scanDepth = 10; // Scan 10px border
+            const thresholdRatio = 0.15; // 15% white pixels threshold
 
-            const isNearWhite = (c: number[]) => c[0] > 240 && c[1] > 240 && c[2] > 240;
-
-            const tolerance = 25; // How much RGB values can differ
-            const threshold = 0.80; // What percentage of pixels on an edge must match
-
-            const checkEdge = (edge: 'top' | 'bottom' | 'left' | 'right'): boolean => {
-                const inset = 5; // Scan 5px inside the edge to avoid artifacts
-                let matchCount = 0;
-
-                if (edge === 'top' || edge === 'bottom') {
-                    const y = edge === 'top' ? inset : height - 1 - inset;
-                    if (y < 0 || y >= height) return false; // Image too small for inset
-                    const refColor = getPixel(Math.floor(width / 2), y);
-
-                    for (let x = 0; x < width; x++) {
-                        const pixelColor = getPixel(x, y);
-                        if (isNearWhite(pixelColor) || colorDistance(pixelColor, refColor) < tolerance) {
-                            matchCount++;
+            const checkRegion = (startX: number, startY: number, w: number, h: number) => {
+                let whiteCount = 0;
+                const totalPixels = w * h;
+                for (let y = startY; y < startY + h; y++) {
+                    for (let x = startX; x < startX + w; x++) {
+                        const idx = (y * width + x) * 4;
+                        if (isWhite(data[idx], data[idx+1], data[idx+2])) {
+                            whiteCount++;
                         }
                     }
-                    return (matchCount / width) > threshold;
-                } else { // left or right
-                    const x = edge === 'left' ? inset : width - 1 - inset;
-                    if (x < 0 || x >= width) return false; // Image too small for inset
-                    const refColor = getPixel(x, Math.floor(height / 2));
-                    
-                    for (let y = 0; y < height; y++) {
-                        const pixelColor = getPixel(x, y);
-                         if (isNearWhite(pixelColor) || colorDistance(pixelColor, refColor) < tolerance) {
-                            matchCount++;
-                        }
-                    }
-                    return (matchCount / height) > threshold;
                 }
+                return (whiteCount / totalPixels) > thresholdRatio;
             };
 
-            if (checkEdge('top') || checkEdge('bottom') || checkEdge('left') || checkEdge('right')) {
-                resolve(true);
-                return;
-            }
+            // Check Top Border
+            if (checkRegion(0, 0, width, scanDepth)) { resolve(true); return; }
+            // Check Bottom Border
+            if (checkRegion(0, height - scanDepth, width, scanDepth)) { resolve(true); return; }
+            // Check Left Border
+            if (checkRegion(0, 0, scanDepth, height)) { resolve(true); return; }
+            // Check Right Border
+            if (checkRegion(width - scanDepth, 0, scanDepth, height)) { resolve(true); return; }
 
             resolve(false);
         };

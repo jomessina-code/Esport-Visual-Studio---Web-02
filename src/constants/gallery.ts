@@ -1,4 +1,5 @@
 
+
 // The user provided a new list of URLs to replace the gallery content.
 // The request is to have these images, randomly placed, without repetition.
 
@@ -132,6 +133,11 @@ const uniqueImages = [
         id: 'gallery-27',
         url: 'https://i.postimg.cc/zf3jNdP8/bataille-navale-en-briques-carre-1024x1024px-2025-11-19-1817-png-compressed.jpg',
         alt: 'Bataille Navale en Briques',
+    },
+    {
+        id: 'gallery-28',
+        url: 'https://i.postimg.cc/RVGPrm6r/bataille_de_briques_corsaires_carre_1024x1024px_2025_11_20_1209_(1)_png_compressed.jpg',
+        alt: 'Bataille de Briques Corsaires',
     }
 ];
 
