@@ -1,6 +1,7 @@
 
 
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import type { EsportPromptOptions, UniverseId, GenerationHistoryItem, UniversePreset, VisualElements, SavedSubject, CharacterShot, InspirationImage, CurrentUser } from '../../types';
 import { GAME_TYPES, GRAPHIC_STYLES, AMBIANCES, VISUAL_ELEMENTS, CHARACTER_SHOTS } from '../../constants/options';
 import { DECLINATION_FORMATS } from '../../constants/formats';
@@ -66,8 +67,8 @@ const Input: React.FC<React.InputHTMLAttributes<HTMLInputElement>> = ({ classNam
 const UniverseDetailsModal: React.FC<{ preset: UniversePreset | null; onClose: () => void }> = ({ preset, onClose }) => {
   if (!preset) return null;
 
-  return (
-    <div className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4 animate-fade-in-up" onClick={onClose} role="dialog" aria-modal="true">
+  return createPortal(
+    <div className="fixed inset-0 bg-black/70 z-[100] flex items-center justify-center p-4 animate-fade-in-up" onClick={onClose} role="dialog" aria-modal="true">
       <div className="bg-gray-800 rounded-lg shadow-2xl w-full max-w-md p-6 border border-purple-700" onClick={e => e.stopPropagation()}>
         <div className="flex justify-between items-center mb-4">
           <h4 className="font-bold text-purple-300 font-orbitron text-lg">{preset.label}</h4>
@@ -99,7 +100,8 @@ const UniverseDetailsModal: React.FC<{ preset: UniversePreset | null; onClose: (
           </div>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };
 
